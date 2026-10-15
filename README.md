@@ -38,8 +38,8 @@ see topology.png
   
 ## Testing 
 - verified each pc through pings both allowed traffic and blocked, see ping_test.png
-- Verified ACL was in place and denied guest traffic
-- Checked VLAN routing tables
+- Verified ACL was in place and denied guest traffic, see ACL.png
+- Checked VLAN routing tables see VLAN.png and routing.png
 
 ## Skills Demonstrated
 - VLAN configuration
