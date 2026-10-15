@@ -1,1 +1,142 @@
+Configuration of Network CLI
 
+VLANs on Switch:
+
+Switch>enable
+Switch#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Switch(config)#hostname Office_Switch
+Office_Switch(config)#vlan 10
+Office_Switch(config-vlan)#name ADMIN
+Office_Switch(config-vlan)#exit
+Office_Switch(config)#vlan 20
+Office_Switch(config-vlan)#name OPS
+Office_Switch(config-vlan)#exit
+Office_Switch(config)#vlan 30
+Office_Switch(config-vlan)#name Guest
+Office_Switch(config-vlan)#exit
+Office_Switch(config)#end
+Office_Switch#
+
+Switch Ports:
+
+Office_Switch#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Office_Switch(config)#interface fa0/2
+Office_Switch(config-if)#switchport mode access
+Office_Switch(config-if)#switchport access vlan 10
+Office_Switch(config-if)#exit
+Office_Switch(config)#interface fa0/3
+Office_Switch(config-if)#switchport mode access
+Office_Switch(config-if)#switchport access vlan 20
+Office_Switch(config-if)#exit
+Office_Switch(config)#interface fa0/4
+Office_Switch(config-if)#switchport mode access
+Office_Switch(config-if)#switchport access vlan 30
+Office_Switch(config-if)#exit
+Office_Switch(config)#interface fa0/5
+Office_Switch(config-if)#switchport mode access
+Office_Switch(config-if)#switchport access vlan 10
+Office_Switch(config-if)#exit
+Office_Switch(config)#
+
+Trunk router and switch:
+
+Office_Switch#
+Office_Switch#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Office_Switch(config)#interface gig0/1
+Office_Switch(config-if)#switchport mode trunk
+Office_Switch(config-if)#switchport trunk allowed vlan 10,20,30
+Office_Switch(config-if)#no shutdown
+Office_Switch(config-if)#exit
+Office_Switch(config)#end
+Office_Switch#
+
+
+Router configuration:
+
+Router>enable
+Router#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Router(config)#hostname Office_Router
+Office_Router(config)#interface gig0/0
+Office_Router(config-if)#no shutdown
+
+Office_Router(config-if)#
+%LINK-5-CHANGED: Interface GigabitEthernet0/0, changed state to up
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet0/0, changed state to up
+
+Office_Router(config-if)#exit
+
+Subinterfaces on router:
+Office_Router(config)#
+Office_Router(config)#interface gig0/0.10
+Office_Router(config-subif)#encapsulation dot1Q 10
+Office_Router(config-subif)#ip address 192.168.10.1 255.255.255.0
+Office_Router(config-subif)#exit
+
+Office_Router(config)#
+Office_Router(config)#interface gig0/0.20
+Office_Router(config-subif)#encapsulation dot1Q 20
+Office_Router(config-subif)#ip address 192.168.20.1 255.255.255.0
+Office_Router(config-subif)#exit
+
+Office_Router(config)#
+Office_Router(config)#interface gig0/0.30
+Office_Router(config-subif)#encapsulation dot1Q 30
+Office_Router(config-subif)#ip address 192.168.30.1 255.255.255.0
+Office_Router(config-subif)#exit
+
+
+DHCP Configuration within VLANs:
+Office_Router#enable
+Office_Router#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Office_Router(config)#ip dhcp excluded-address 192.168.10.1 192.168.10.99
+Office_Router(config)#ip dhcp excluded-address 192.168.20.1 192.168.20.99
+Office_Router(config)#ip dhcp excluded-address 192.168.30.1 192.168.30.99
+Office_Router(config)#ip dhcp pool ADMIN
+Office_Router(dhcp-config)#network 192.168.10.0 255.255.255.0
+Office_Router(dhcp-config)#default-router 192.168.10.1
+Office_Router(dhcp-config)#dns-server 8.8.8.8
+Office_Router(dhcp-config)#exit
+Office_Router(config)#ip dhcp pool OPS
+Office_Router(dhcp-config)#network 192.168.20.0 255.255.255.0
+Office_Router(dhcp-config)#default-router 192.168.20.1
+Office_Router(dhcp-config)#dns-server 8.8.8.8
+Office_Router(dhcp-config)#exit
+Office_Router(config)#ip dhcp pool Guest
+Office_Router(dhcp-config)#network 192.168.30.0 255.255.255.0
+Office_Router(dhcp-config)#default-router 192.168.30.1
+Office_Router(dhcp-config)#dns-server 8.8.8.8
+Office_Router(dhcp-config)#exit
+Office_Router(config)#end
+Office_Router#
+
+
+printer setup: 
+open ip configuration and set ip address to 192.168.10.10
+subnet default
+default gateway 192.168.10.1
+
+PC setup:
+open desktop, ip config and select dhcp and it should automatically setup the IPs
+see pc-ip.png
+
+
+Creating ACL on router:
+Office_Router#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Office_Router(config)#ip access-list extended Guest-RESTRICTION
+Office_Router(config-ext-nacl)#deny ip 192.168.30.0 0.0.0.255 192.168.10.0 0.0.0.255
+Office_Router(config-ext-nacl)#deny ip 192.168.30.0 0.0.0.255 192.168.20.0 0.0.0.255
+Office_Router(config-ext-nacl)#permit ip 192.168.30.0 0.0.0.255 any
+Office_Router(config-ext-nacl)#exit
+
+Office_Router(config)#interface gig0/0.30
+Office_Router(config-subif)#ip access-group Guest-RESTRICTION in
+Office_Router(config-subif)#exit
+Office_Router(config)#end
+Office_Router#
