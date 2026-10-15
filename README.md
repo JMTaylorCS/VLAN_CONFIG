@@ -14,7 +14,7 @@ see topology.png
 - VLAN 10 Admin: '192.168.10.0/24' default: 192.168.10.1
 - VLAN 20 Ops: '192.168.20.0/24' default: 192.168.20.1
 - Vlan 30 Guest: '192.168.30.0/24' default: 192.168.30.1
-- Printer : static '192.168.10.10'\
+- Printer : static '192.168.10.10'
 
 ## Configuration
 ### Switch
