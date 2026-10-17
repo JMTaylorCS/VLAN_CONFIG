@@ -38,7 +38,8 @@ Office_Switch(config)#interface fa0/5
 Office_Switch(config-if)#switchport mode access
 Office_Switch(config-if)#switchport access vlan 10
 Office_Switch(config-if)#exit
-Office_Switch(config)#
+Office_Switch(config)#end
+Office_switch#copy running-config startup-config
 
 Trunk router and switch:
 
@@ -51,7 +52,7 @@ Office_Switch(config-if)#switchport trunk allowed vlan 10,20,30
 Office_Switch(config-if)#no shutdown
 Office_Switch(config-if)#exit
 Office_Switch(config)#end
-Office_Switch#
+Office_Switch#copy running-config startup-config
 
 
 Router configuration:
@@ -88,7 +89,8 @@ Office_Router(config)#interface gig0/0.30
 Office_Router(config-subif)#encapsulation dot1Q 30
 Office_Router(config-subif)#ip address 192.168.30.1 255.255.255.0
 Office_Router(config-subif)#exit
-
+Office_Router(config)#end
+Office_Router#copy running-config startup-config
 
 DHCP Configuration within VLANs:
 Office_Router#enable
@@ -113,7 +115,7 @@ Office_Router(dhcp-config)#default-router 192.168.30.1
 Office_Router(dhcp-config)#dns-server 8.8.8.8
 Office_Router(dhcp-config)#exit
 Office_Router(config)#end
-Office_Router#
+Office_Router#copy running-config startup-config
 
 
 printer setup: 
@@ -139,4 +141,4 @@ Office_Router(config)#interface gig0/0.30
 Office_Router(config-subif)#ip access-group Guest-RESTRICTION in
 Office_Router(config-subif)#exit
 Office_Router(config)#end
-Office_Router#
+Office_Router#copy running-config startup-config
